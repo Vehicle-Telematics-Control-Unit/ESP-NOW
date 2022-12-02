@@ -69,7 +69,7 @@ void sentCallback(const uint8_t *macAddr, esp_now_send_status_t status)
  */
 void broadcast(const String &message)
 {
-  // Broadcast a message to every device in range
+  // Broadcast message to every device in range
   uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   esp_now_peer_info_t peerInfo = {};
   memcpy(&peerInfo.peer_addr, broadcastAddress, 6);
@@ -109,4 +109,50 @@ void broadcast(const String &message)
   {
     Serial.println("Unknown error");
   }
+}
+
+void setup()
+{
+ 
+  #ifdef DEBUG
+  // Set up Serial Monitor
+  Serial.begin(115200);
+  delay(1000);
+  #endif
+
+  // Set ESP32 in STA mode to begin with
+  WiFi.mode(WIFI_STA);
+  #ifdef DEBUG
+  Serial.println("ESP-NOW Broadcast Demo");
+ 
+  // Print MAC address
+  Serial.print("MAC Address: ");
+  Serial.println(WiFi.macAddress());
+  #endif
+  // Disconnect from WiFi
+  WiFi.disconnect();
+ 
+  // Initialize ESP-NOW
+  if (esp_now_init() == ESP_OK)
+  {
+    #ifdef DEBUG
+    Serial.println("ESP-NOW Init Success");
+    #endif
+    esp_now_register_recv_cb(receiveCallback);
+    esp_now_register_send_cb(sentCallback);
+  }
+  else
+  {
+    Serial.println("ESP-NOW Init Failed");
+    delay(3000);
+    ESP.restart();
+  }
+
+  /* other setup codes here */
+}
+
+void loop()
+{
+  broadcast("Hello World!"); // easiest hello world ever !
+  delay(1000);
 }
