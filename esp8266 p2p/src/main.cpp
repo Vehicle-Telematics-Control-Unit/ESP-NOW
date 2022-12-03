@@ -73,20 +73,20 @@ void sentCallback(u8 *macAddr, u8 status)
 void broadcast(const String &message)
 {
   // Broadcast message to every device in range
-  uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-  u8 broadcastAddress2[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-  esp_now_peer_info_t peerInfo = {};
-  memcpy(&peerInfo.peer_addr, broadcastAddress, 6);
+  // uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+  u8 broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+  // esp_now_peer_info_t peerInfo = {};
+  // memcpy(&peerInfo.peer_addr, broadcastAddress, 6);
+  esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
+
   if (!esp_now_is_peer_exist(broadcastAddress))
   {
     // esp_now_add_peer(&peerInfo);
-    esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_SLAVE, 0, 0, 16);
+    esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
   }
   // Send message
 
-  // int result = esp_now_send(broadcastAddress, (u8 *)message.c_str(), message.length());
-  int result = esp_now_send(broadcastAddress2, (u8*)"hello", 6);
- 
+  int result = esp_now_send(broadcastAddress, (u8 *)message.c_str(), message.length()); 
   // Print results to serial monitor
   if (result == ESP_OK)
   {
@@ -160,6 +160,6 @@ void setup()
 
 void loop()
 {
-  broadcast("Hello World! ESP8266 "); // easiest hello world ever !
+  broadcast("Hello From ESP8266 "); // easiest hello world ever !
   delay(1000);
 }

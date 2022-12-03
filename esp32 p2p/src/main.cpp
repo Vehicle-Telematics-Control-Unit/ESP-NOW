@@ -153,6 +153,6 @@ void setup()
 
 void loop()
 {
-  broadcast("Hello World! ESP32"); // easiest hello world ever !
+  broadcast("Hello From ESP32"); // easiest hello world ever !
   delay(1000);
 }
