@@ -1,8 +1,11 @@
 #include <Arduino.h>
-#include <WiFi.h>
-#include <esp_now.h>
+#include <ESP8266WiFi.h>
+#include <espnow.h>
+#include "esp_now_8266_fix.h"
+// #include <
 
 #define DEBUG true
+
 
 /**
  * @brief makes a printable string from a uint8_t mac address array 
@@ -21,11 +24,11 @@ void formatMacAddress(const uint8_t *macAddr, char *buffer)
  * @param data data recieved from the sender of the mentioned above mac address
  * @param dataLen length of the data recieved
  */
-void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen) // Called when data is received
+void receiveCallback(u8 *macAddr, u8 *data, u8 dataLen) // Called when data is received
 {
   // Only allow a maximum of 250 characters in the message + a null terminating byte
   char buffer[ESP_NOW_MAX_DATA_LEN + 1];
-  int msgLen = min(ESP_NOW_MAX_DATA_LEN, dataLen);
+  int msgLen = min(ESP_NOW_MAX_DATA_LEN, (int)dataLen);
   strncpy(buffer, (const char *)data, msgLen);
 
   // Ensure we are null terminated
@@ -49,7 +52,7 @@ void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen) /
  * @param macAddr destination mac address
  * @param status send status. Available values: ESP_NOW_SEND_{SUCCESS, Failed} 
  */
-void sentCallback(const uint8_t *macAddr, esp_now_send_status_t status)
+void sentCallback(u8 *macAddr, u8 status)
 {
   #ifdef DEBUG
   char macStr[18];
@@ -71,15 +74,19 @@ void broadcast(const String &message)
 {
   // Broadcast message to every device in range
   uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+  u8 broadcastAddress2[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   esp_now_peer_info_t peerInfo = {};
   memcpy(&peerInfo.peer_addr, broadcastAddress, 6);
+  esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
+
   if (!esp_now_is_peer_exist(broadcastAddress))
   {
-    esp_now_add_peer(&peerInfo);
+    // esp_now_add_peer(&peerInfo);
+    esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
   }
   // Send message
-  esp_err_t result = esp_now_send(broadcastAddress, (const uint8_t *)message.c_str(), message.length());
- 
+
+  int result = esp_now_send(broadcastAddress, (u8 *)message.c_str(), message.length()); 
   // Print results to serial monitor
   if (result == ESP_OK)
   {
@@ -153,6 +160,6 @@ void setup()
 
 void loop()
 {
-  broadcast("Hello World! ESP32"); // easiest hello world ever !
+  broadcast("Hello From ESP8266 "); // easiest hello world ever !
   delay(1000);
 }
