@@ -2,7 +2,8 @@
 #include <WiFi.h>
 #include <esp_now.h>
 
-#define DEBUG true
+#define LED_BUILTIN 2
+#define VERBOSE false
 
 /**
  * @brief makes a printable string from a uint8_t mac address array 
@@ -31,7 +32,7 @@ void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen) /
   // Ensure we are null terminated
   buffer[msgLen] = 0;
 
-  #ifdef DEBUG
+  #if VERBOSE
 
   // Format the MAC address, put into printable form
   char macStr[18];
@@ -51,7 +52,7 @@ void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen) /
  */
 void sentCallback(const uint8_t *macAddr, esp_now_send_status_t status)
 {
-  #ifdef DEBUG
+  #if VERBOSE
   char macStr[18];
   formatMacAddress(macAddr, macStr);
   Serial.print("Last Packet Sent to: ");
@@ -67,8 +68,9 @@ void sentCallback(const uint8_t *macAddr, esp_now_send_status_t status)
  * 
  * @param message information to be sent to every device
  */
-void broadcast(const String &message)
+void broadcast(char *message, int length)
 {
+  digitalWrite(LED_BUILTIN, HIGH);
   // Broadcast message to every device in range
   uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   esp_now_peer_info_t peerInfo = {};
@@ -78,12 +80,15 @@ void broadcast(const String &message)
     esp_now_add_peer(&peerInfo);
   }
   // Send message
-  esp_err_t result = esp_now_send(broadcastAddress, (const uint8_t *)message.c_str(), message.length());
+  esp_err_t result = esp_now_send(broadcastAddress, (const uint8_t *)message, length);
  
   // Print results to serial monitor
   if (result == ESP_OK)
   {
+#if VERBOSE
     Serial.println("Broadcast message success");
+#endif
+  digitalWrite(LED_BUILTIN, LOW);
   }
   else if (result == ESP_ERR_ESPNOW_NOT_INIT)
   {
@@ -113,46 +118,61 @@ void broadcast(const String &message)
 
 void setup()
 {
- 
-  #ifdef DEBUG
+  pinMode(LED_BUILTIN, OUTPUT);
+
   // Set up Serial Monitor
   Serial.begin(115200);
-  delay(1000);
-  #endif
 
   // Set ESP32 in STA mode to begin with
   WiFi.mode(WIFI_STA);
-  #ifdef DEBUG
-  Serial.println("ESP-NOW Broadcast Demo");
- 
+#if VERBOSE == true
+  Serial.println("ESP-NOW Broadcast Mode");
+
   // Print MAC address
   Serial.print("MAC Address: ");
   Serial.println(WiFi.macAddress());
-  #endif
+#endif
   // Disconnect from WiFi
   WiFi.disconnect();
- 
+
   // Initialize ESP-NOW
   if (esp_now_init() == ESP_OK)
   {
-    #ifdef DEBUG
+#if VERBOSE == true
     Serial.println("ESP-NOW Init Success");
-    #endif
+#endif
     esp_now_register_recv_cb(receiveCallback);
     esp_now_register_send_cb(sentCallback);
   }
   else
   {
+    digitalWrite(LED_BUILTIN, HIGH);
     Serial.println("ESP-NOW Init Failed");
-    delay(3000);
+    delay(10000);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(1000);
     ESP.restart();
   }
 
   /* other setup codes here */
 }
 
+byte data_length;
+char arr[256];
+
 void loop()
 {
-  broadcast("Hello From ESP32"); // easiest hello world ever !
-  delay(1000);
+  while (!Serial.available())
+  {
+  }
+
+  data_length = Serial.read();
+  Serial.readBytes(arr, data_length);
+
+#if VERBOSE == true
+  Serial.println(arr);
+#endif
+
+  broadcast(arr, data_length);
+  memset(arr, 0, data_length + 1);
 }
