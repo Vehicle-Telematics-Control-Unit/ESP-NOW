@@ -13,7 +13,7 @@
  */
 void formatMacAddress(const uint8_t *macAddr, char *buffer)
 {
-  snprintf(buffer, 18, "%02x:%02x:%02x:%02x:%02x:%02x", macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5]);
+  snprintf(buffer, 12, "%02x%02x%02x%02x%02x%02x", macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5]);
 }
 
 /**
@@ -32,16 +32,12 @@ void receiveCallback(u8 *macAddr, u8 *data, u8 dataLen) // Called when data is r
   // Ensure we are null terminated
   buffer[msgLen] = 0;
 
-#if VERBOSE == true
-
   // Format the MAC address, put into printable form
-  char macStr[18];
+  char macStr[13];
   formatMacAddress(macAddr, macStr);
 
   // Send Debug log message to the serial port
-  Serial.printf("Received message from: %s - %s\n", macStr, buffer);
-
-#endif
+  Serial.printf("%c%s%s\n", dataLen + 12, macStr, buffer);
 }
 
 /**
@@ -170,7 +166,7 @@ void loop()
   {
   }
 
-  data_length = Serial.read() - '0';
+  data_length = Serial.read();
   Serial.readBytes(arr, data_length);
 
 #if VERBOSE == true

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "esp8266 p2p",
+			"path": "../../esp8266 p2p"
+		}
+	],
+	"settings": {}
+}

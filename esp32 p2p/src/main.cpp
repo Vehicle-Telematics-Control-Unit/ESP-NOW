@@ -13,7 +13,7 @@
  */
 void formatMacAddress(const uint8_t *macAddr, char *buffer)
 {
-  snprintf(buffer, 18, "%02x:%02x:%02x:%02x:%02x:%02x", macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5]);
+  snprintf(buffer, 12, "%02x%02x%02x%02x%02x%02x", macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5]);
 }
 
 /**
@@ -26,22 +26,18 @@ void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen) /
 {
   // Only allow a maximum of 250 characters in the message + a null terminating byte
   char buffer[ESP_NOW_MAX_DATA_LEN + 1];
-  int msgLen = min(ESP_NOW_MAX_DATA_LEN, dataLen);
+  int msgLen = min(ESP_NOW_MAX_DATA_LEN, (int)dataLen);
   strncpy(buffer, (const char *)data, msgLen);
 
   // Ensure we are null terminated
   buffer[msgLen] = 0;
 
-  #if VERBOSE
-
   // Format the MAC address, put into printable form
-  char macStr[18];
+  char macStr[13];
   formatMacAddress(macAddr, macStr);
 
   // Send Debug log message to the serial port
-  Serial.printf("Received message from: %s - %s\n", macStr, buffer);
-
-  #endif
+  Serial.printf("%c%s%s\n", dataLen + 12, macStr, buffer);
 }
 
 /**
