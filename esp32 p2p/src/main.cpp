@@ -4,6 +4,7 @@
 
 #define LED_BUILTIN 2
 #define VERBOSE false
+// #define pln(x) Serial.println(x)
 
 /**
  * @brief makes a printable string from a uint8_t mac address array 
@@ -13,7 +14,7 @@
  */
 void formatMacAddress(const uint8_t *macAddr, char *buffer)
 {
-  snprintf(buffer, 12, "%02x%02x%02x%02x%02x%02x", macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5]);
+  snprintf(buffer, 13, "%02x%02x%02x%02x%02x%02x\0", macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5]);
 }
 
 /**
@@ -37,7 +38,7 @@ void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen) /
   formatMacAddress(macAddr, macStr);
 
   // Send Debug log message to the serial port
-  Serial.printf("%c%s%s\n", dataLen + 12, macStr, buffer);
+  Serial.printf("%c%s%s", dataLen + 12, macStr, buffer);
 }
 
 /**
@@ -115,7 +116,6 @@ void broadcast(char *message, int length)
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
-
   // Set up Serial Monitor
   Serial.begin(115200);
 
