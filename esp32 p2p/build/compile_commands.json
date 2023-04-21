@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build",
+  "command": "/usr/bin/gcc -I\"/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/.pio/libdeps/esp32dev/Unity/src\" -I\"/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build\" -g -std=c11 -Waddress -Waggregate-return -Wformat-nonliteral -Wformat-security -Wformat -Winit-self -Wmissing-declarations -Wmissing-include-dirs -Wno-multichar -Wno-parentheses -Wno-type-limits -Wno-unused-parameter -Wunreachable-code -Wwrite-strings -Wpointer-arith -Werror -Wall -o CMakeFiles/unity.dir/src/unity.c.o -c \"/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/.pio/libdeps/esp32dev/Unity/src/unity.c\"",
+  "file": "/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/.pio/libdeps/esp32dev/Unity/src/unity.c",
+  "output": "CMakeFiles/unity.dir/src/unity.c.o"
+}
+]

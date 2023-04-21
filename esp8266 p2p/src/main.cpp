@@ -3,7 +3,7 @@
 #include <espnow.h>
 #include "esp_now_8266_fix.h"
 
-#define VERBOSE false
+#define DEBUG false
 
 /**
  * @brief makes a printable string from a uint8_t mac address array
@@ -27,7 +27,7 @@ void receiveCallback(u8 *macAddr, u8 *data, u8 dataLen) // Called when data is r
   // Only allow a maximum of 250 characters in the message + a null terminating byte
   char buffer[ESP_NOW_MAX_DATA_LEN + 1];
   int msgLen = min(ESP_NOW_MAX_DATA_LEN, (int)dataLen);
-  strncpy(buffer, (const char *)data, msgLen);
+  memcpy(buffer, data, msgLen);
 
   // Ensure we are null terminated
   buffer[msgLen] = 0;
@@ -36,8 +36,24 @@ void receiveCallback(u8 *macAddr, u8 *data, u8 dataLen) // Called when data is r
   char macStr[13];
   formatMacAddress(macAddr, macStr);
 
+#if DEBUG
+  Serial.printf("datalen without mac: %d\n", dataLen);
+  Serial.printf("msglen without mac: %d\n", msgLen);
+#endif
+
   // Send Debug log message to the serial port
-  Serial.printf("%c%s%s", dataLen + 12, macStr, buffer);
+  char s[300];
+  buffer[dataLen] = '\0';
+  Serial.write((char)(msgLen+12));
+  Serial.write(macStr, 12);
+  Serial.write(buffer, msgLen);
+  // sprintf(s, "%c%s%s", dataLen + 12, macStr, buffer);
+  // Serial.write(s, dataLen + 12 + 1);
+
+  // for (int i = 0; i < dataLen; i++)
+  // {
+  //   Serial.print(buffer[i]);
+  // }
 }
 
 /**
@@ -48,7 +64,7 @@ void receiveCallback(u8 *macAddr, u8 *data, u8 dataLen) // Called when data is r
  */
 void sentCallback(u8 *macAddr, u8 status)
 {
-#if VERBOSE == true
+#if DEBUG == true
   char macStr[18];
   formatMacAddress(macAddr, macStr);
   Serial.print("Last Packet Sent to: ");
@@ -85,7 +101,7 @@ void broadcast(char *message, int length)
   // Print results to serial monitor
   if (result == ESP_OK)
   {
-#if VERBOSE
+#if DEBUG
     Serial.println("Broadcast message success");
 #endif
     // digitalWrite(LED_BUILTIN, LOW);
@@ -125,7 +141,7 @@ void setup()
   Serial.begin(115200);
   // Set ESP32 in STA mode to begin with
   WiFi.mode(WIFI_STA);
-#if VERBOSE == true
+#if DEBUG == true
   Serial.println("ESP-NOW Broadcast Mode");
 
   // Print MAC address
@@ -138,7 +154,7 @@ void setup()
   // Initialize ESP-NOW
   if (esp_now_init() == ESP_OK)
   {
-#if VERBOSE == true
+#if DEBUG == true
     Serial.println("ESP-NOW Init Success");
 #endif
     esp_now_register_recv_cb(receiveCallback);
@@ -167,12 +183,36 @@ void loop()
   }
 
   data_length = Serial.read();
-  Serial.readBytes(arr, data_length);
+#if DEBUG
+  Serial.print("data_length:");
+  Serial.println(data_length);
+#endif
 
-#if VERBOSE == true
-  Serial.println(arr);
+  int actual_read_length = 0;
+  while (actual_read_length < data_length)
+  {
+    actual_read_length += Serial.readBytes(&arr[actual_read_length], data_length - actual_read_length);
+
+    if (actual_read_length != data_length)
+    {
+      Serial.print("[ERROR] Actual_read_length = ");
+      Serial.println(actual_read_length);
+
+      Serial.print("[ERROR] true_data_length = ");
+      Serial.println(data_length);
+    }
+  }
+
+#if DEBUG
+  Serial.print("data_arr:");
+  for (int i = 0; i < actual_read_length; i++)
+  {
+    Serial.print(arr[i]);
+  }
+  Serial.println();
 #endif
 
   broadcast(arr, data_length);
-  memset(arr, 0, data_length + 1);
+  // broadcast(arr, actual_read_length);
+  memset(arr, 0, data_length + 2);
 }

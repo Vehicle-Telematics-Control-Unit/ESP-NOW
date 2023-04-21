@@ -1,0 +1,7 @@
+/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build/CMakeFiles/unity.dir
+/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build/CMakeFiles/edit_cache.dir
+/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build/CMakeFiles/rebuild_cache.dir
+/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build/CMakeFiles/list_install_components.dir
+/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build/CMakeFiles/install.dir
+/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build/CMakeFiles/install/local.dir
+/mnt/datapart/Semster 9/Grad Project/ESP-NOW/esp32 p2p/build/CMakeFiles/install/strip.dir

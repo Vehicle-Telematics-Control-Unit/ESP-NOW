@@ -1,0 +1,60 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cmake",
+			"label": "CMake: build",
+			"command": "build",
+			"targets": [
+				""
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CMake template build task"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: xtensa-esp32-elf-gcc build active file",
+			"command": "/home/ahmed/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}",
+				"-mlongcalls",
+				""
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: /home/ahmed/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: xtensa-esp32-elf-gcc build active file",
+			"command": "/home/ahmed/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}",
+				"-mlongcalls",
+				""
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: /home/ahmed/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc"
+		}
+	]
+}
