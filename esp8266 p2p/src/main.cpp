@@ -47,13 +47,7 @@ void receiveCallback(u8 *macAddr, u8 *data, u8 dataLen) // Called when data is r
   Serial.write((char)(msgLen + 12));
   Serial.write(macStr, 12);
   Serial.write(buffer, msgLen);
-  // sprintf(s, "%c%s%s", dataLen + 12, macStr, buffer);
-  // Serial.write(s, dataLen + 12 + 1);
 
-  // for (int i = 0; i < dataLen; i++)
-  // {
-  //   Serial.print(buffer[i]);
-  // }
 }
 
 /**
@@ -193,6 +187,7 @@ void loop()
   {
     actual_read_length += Serial.readBytes(&arr[actual_read_length], data_length - actual_read_length);
 
+#if DEBUG == true
     if (actual_read_length != data_length)
     {
       Serial.print("[ERROR] Actual_read_length = ");
@@ -201,6 +196,8 @@ void loop()
       Serial.print("[ERROR] true_data_length = ");
       Serial.println(data_length);
     }
+#endif
+
   }
 
 #if DEBUG
@@ -214,19 +211,5 @@ void loop()
 
   broadcast(arr, data_length);
   // broadcast(arr, actual_read_length);
-
-  while (!Serial.available())
-  {
-  }
-  if (Serial.read() == 'A') // Success
-  {
-    // do nothing
-  }
-  else
-  {
-    Serial.print("--ABORTABORTABORT--");
-    ESP.restart();
-  }
-
   memset(arr, 0, data_length + 2);
 }
