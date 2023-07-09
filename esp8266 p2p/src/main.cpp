@@ -42,9 +42,9 @@ void receiveCallback(u8 *macAddr, u8 *data, u8 dataLen) // Called when data is r
 #endif
 
   // Send Debug log message to the serial port
-  char s[300];
+  // char s[300];
   buffer[dataLen] = '\0';
-  Serial.write((char)(msgLen+12));
+  Serial.write((char)(msgLen + 12));
   Serial.write(macStr, 12);
   Serial.write(buffer, msgLen);
   // sprintf(s, "%c%s%s", dataLen + 12, macStr, buffer);
@@ -95,8 +95,8 @@ void broadcast(char *message, int length)
     // esp_now_add_peer(&peerInfo);
     esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
   }
-  // Send message
 
+  // Send message
   int result = esp_now_send(broadcastAddress, (u8 *)message, length);
   // Print results to serial monitor
   if (result == ESP_OK)
@@ -214,5 +214,19 @@ void loop()
 
   broadcast(arr, data_length);
   // broadcast(arr, actual_read_length);
+
+  while (!Serial.available())
+  {
+  }
+  if (Serial.read() == 'A') // Success
+  {
+    // do nothing
+  }
+  else
+  {
+    Serial.print("--ABORTABORTABORT--");
+    ESP.restart();
+  }
+
   memset(arr, 0, data_length + 2);
 }

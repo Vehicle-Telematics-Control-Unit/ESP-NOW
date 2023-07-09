@@ -43,7 +43,7 @@ void receiveCallback(const uint8_t *macAddr, const uint8_t *data, int dataLen) /
 #endif
 
   // Send Debug log message to the serial port
-  char s[300];
+  // char [300];
   buffer[dataLen] = '\0';
   Serial.write((char)(msgLen+12));
   Serial.write(macStr, 12);
@@ -190,6 +190,7 @@ void loop()
   {
     actual_read_length += Serial.readBytes(&arr[actual_read_length], data_length - actual_read_length);
 
+#if DEBUG == true
     if (actual_read_length != data_length)
     {
       Serial.print("[ERROR] Actual_read_length = ");
@@ -198,6 +199,7 @@ void loop()
       Serial.print("[ERROR] true_data_length = ");
       Serial.println(data_length);
     }
+#endif
 
   } while (actual_read_length < data_length);
 
@@ -211,6 +213,19 @@ void loop()
 #endif
 
   broadcast(arr, data_length);
+  
+  while (!Serial.available())
+  {
+  }
+  if (Serial.read() == 'A') // Success
+  {
+    // do nothing
+  }
+  else
+  {
+    Serial.print("--ABORTABORTABORT--");
+    ESP.restart();
+  }
   // broadcast(arr, actual_read_length);
   memset(arr, 0, data_length + 2);
 }
